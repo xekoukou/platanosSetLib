@@ -37,7 +37,7 @@ extern "C"
     typedef struct _sklist_t sklist_t;
 
 //  Create a new skip list
-    sklist_t *sklist_new (void);
+    sklist_t *sklist_new (int max_height);
 
 //  Destroy a skip list
     void sklist_destroy (sklist_t ** sklist);
@@ -53,8 +53,7 @@ extern "C"
 
 //  Search a key between 2 limits, returns the sklist node that contains it
     sklnode_t *sklist_lsearch (sklist_t * t, uint64_t key,
-                                             sklnode_t * rlimit,
-                                             sklnode_t * llimit);
+                               sklnode_t * llimit, sklnode_t * ulimit);
 
 
 //  Selt test of this class

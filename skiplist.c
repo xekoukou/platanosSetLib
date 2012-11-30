@@ -20,7 +20,6 @@
 
 #include "skiplist.h"
 
-#define MAX_NODE_HEIGHT 64
 
 
 struct _sklnode_t
@@ -53,7 +52,7 @@ comp_node_t (sklnode_t * first, sklnode_t * second)
 sklnode_t *
 node_new (uint64_t key)
 {
-    sklnode_t *node = calloc (1,sizeof (sklnode_t));
+    sklnode_t *node = calloc (1, sizeof (sklnode_t));
     node->key = key;
 
     return node;
@@ -76,16 +75,18 @@ node_destroy (sklnode_t ** node)
 struct _sklist_t
 {
     sklnode_t *head;
+    int max_height;
 };
 
 
 sklist_t *
-sklist_new (void)
+sklist_new (int max_height)
 {
     sklist_t *sklist = malloc (sizeof (sklist_t));
     sklist->head = node_new (0);
     sklist->head->height = 1;
-    sklist->head->next = calloc (1,sizeof (sklnode_t *));
+    sklist->head->next = calloc (1, sizeof (sklnode_t *));
+    sklist->max_height = max_height;
     return sklist;
 }
 
@@ -138,11 +139,11 @@ sklist_add_ (sklist_t * sklist, int height, uint64_t key)
     }
 
     node->height = 1;
-    if ((node->height < MAX_NODE_HEIGHT) && ((rand () % 4) == 0)) {
+    if ((node->height < sklist->max_height) && ((rand () % 4) == 0)) {
         node->height++;
     }
 
-    node->next = calloc (node->height , sizeof (sklnode_t *));
+    node->next = calloc (node->height, sizeof (sklnode_t *));
 
     for (iter = 1; iter <= height; iter++) {
         node->next[iter - 1] = prev_list[iter]->next[iter - 1];
@@ -233,18 +234,18 @@ sklist_search (sklist_t * sklist, uint64_t key)
 
 sklnode_t *
 sklist_lsearch (sklist_t * t, uint64_t key,
-                 sklnode_t * rlimit, sklnode_t * llimit)
+                sklnode_t * llimit, sklnode_t * ulimit)
 {
     sklnode_t node;
     node.key = key;
 
-    int iter = rlimit->height;
-    if (llimit) {
-        if (llimit->height < iter) {
-            iter = llimit->height;
+    int iter = llimit->height;
+    if (ulimit) {
+        if (ulimit->height < iter) {
+            iter = ulimit->height;
         }
     }
-    sklnode_t *ptr = rlimit;
+    sklnode_t *ptr = llimit;
     while (iter) {
         if (!(ptr->next[iter - 1])) {
             iter--;
@@ -273,7 +274,7 @@ void
 sklist_test (int verbose)
 {
     printf (" * sklist: ");
-    sklist_t *list = sklist_new ();
+    sklist_t *list = sklist_new (10);
 
     uint64_t key[100];
     int iter;
