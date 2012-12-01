@@ -49,9 +49,12 @@ extern "C"
     } critbit0_tree;
 
     int critbit0_contains (critbit0_tree * t, const char *u);
-    critbit0_node *critbit0_subtree_contains (critbit0_tree * t,
-                                              critbit0_node * p,
-                                              const char *u);
+
+//parent is given the value of the last internal node
+//return 1 on success 
+    int critbit0_subtree_contains (critbit0_tree * t,
+                                   critbit0_node * p,
+                                   const char *u, critbit0_node ** parent);
     int critbit0_insert (critbit0_tree * t, const char *u);
     int critbit0_delete (critbit0_tree * t, const char *u);
     void critbit0_clear (critbit0_tree * t);

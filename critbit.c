@@ -30,14 +30,14 @@ critbit0_contains (critbit0_tree * t, const char *u)
     if (!t->root) {
         return 0;
     }
-
-    return (NULL != critbit0_subtree_contains (t, t->root, u));
+    critbit0_node *redundant;
+    return critbit0_subtree_contains (t, t->root, u, &redundant);
 
 }
 
-critbit0_node *
+int
 critbit0_subtree_contains (critbit0_tree * t, critbit0_node * p,
-                           const char *u)
+                           const char *u, critbit0_node ** parent)
 {
     const uint8_t *ubytes = (void *) u;
     const size_t ulen = strlen (u);
@@ -56,13 +56,9 @@ critbit0_subtree_contains (critbit0_tree * t, critbit0_node * p,
         p = q->child[direction];
     }
 
+    *parent = ((void *) q + 1);
 
-    if (0 == strcmp (u, (const char *) p)) {
-        return ((void *) q + 1);
-    }
-    else {
-        return NULL;
-    }
+    return 0 == strcmp (u, (const char *) p);
 
 
 }
