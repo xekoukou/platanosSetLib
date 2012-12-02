@@ -22,14 +22,6 @@
 
 
 
-struct _jnode_t
-{
-    int height;
-    struct _jnode_t **next;
-    uint64_t position;
-    uint64_t key;
-};
-
 
 int
 comp_node_t (jnode_t * first, jnode_t * second)

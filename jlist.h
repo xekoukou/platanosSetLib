@@ -40,6 +40,15 @@ extern "C"
 {
 #endif
 
+struct _jnode_t
+{
+    int height;
+    struct _jnode_t **next;
+    uint64_t position;
+    uint64_t key;
+};
+
+
     typedef struct _jnode_t jnode_t;
 
     jnode_t *node_init (jnode_t * node, uint64_t key, uint64_t position);
