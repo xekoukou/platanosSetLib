@@ -24,7 +24,7 @@
 
 
 int
-comp_node_t (jnode_t * first, jnode_t * second)
+comp_jnode_t (jnode_t * first, jnode_t * second)
 {
     if (first->key > second->key) {
         return 1;
@@ -43,10 +43,13 @@ comp_node_t (jnode_t * first, jnode_t * second)
 
 
 jnode_t *
-node_init (jnode_t * node, uint64_t key, uint64_t position)
+node_init (jnode_t * node, uint64_t key, uint8_t size, uint64_t position,
+           uint8_t value)
 {
     node->key = key;
     node->position = position;
+    node->value = value;
+    node->size = size;
 
     return node;
 }
@@ -65,7 +68,7 @@ jlist_new (int max_height)
 {
     jlist_t *jlist = calloc (1, sizeof (jlist_t));
     jlist->head = calloc (1, sizeof (jnode_t));
-    jlist->head = node_init (jlist->head, 0, 0);
+    jlist->head = node_init (jlist->head, 0, 0, 0, 0);
     jlist->head->height = 1;
     jlist->head->next = calloc (max_height, sizeof (jnode_t *));
     jlist->max_height = max_height;
@@ -92,13 +95,9 @@ jlist_clear (jlist_t * jlist)
 
 
 int
-jlist_add_ (jlist_t * jlist, int height, jnode_t * node, uint64_t key,
-            uint64_t position)
+jlist_add_ (jlist_t * jlist, int height, jnode_t * node)
 {
-    assert (key > 0);
-
     jnode_t *prev_list[height];
-    node_init (node, key, position);
 
     int iter = height;
     jnode_t *ptr = jlist->head;
@@ -108,7 +107,7 @@ jlist_add_ (jlist_t * jlist, int height, jnode_t * node, uint64_t key,
             iter--;
         }
         else {
-            int comp = comp_node_t (node, ptr->next[iter - 1]);
+            int comp = comp_jnode_t (node, ptr->next[iter - 1]);
             if (comp == 1) {
                 ptr = ptr->next[iter - 1];
             }
@@ -118,6 +117,12 @@ jlist_add_ (jlist_t * jlist, int height, jnode_t * node, uint64_t key,
                     iter--;
                 }
                 else {
+//in essence we create a new list that has this node as a start
+//searching till this node is also possible if at least one node remains in the skiplist
+//we should either delete all or none
+                    node->height = ptr->next[iter - 1]->height;
+                    memcpy (node->next, ptr->next[iter - 1]->next,
+                            node->height * sizeof (jnode_t *));
                     return 0;
                 }
             }
@@ -140,9 +145,9 @@ jlist_add_ (jlist_t * jlist, int height, jnode_t * node, uint64_t key,
 
 //returns 0 if the key already exists
 int
-jlist_add (jlist_t * jlist, jnode_t * node, uint64_t key, uint64_t position)
+jlist_add (jlist_t * jlist, jnode_t * node)
 {
-    return jlist_add_ (jlist, jlist->head->height, node, key, position);
+    return jlist_add_ (jlist, jlist->head->height, node);
 }
 
 int
@@ -164,7 +169,7 @@ jlist_delete_ (jlist_t * jlist, int height, uint64_t key)
             iter--;
         }
         else {
-            comp = comp_node_t (&node, ptr->next[iter - 1]);
+            comp = comp_jnode_t (&node, ptr->next[iter - 1]);
             if (comp == 1) {
                 ptr = ptr->next[iter - 1];
             }
@@ -233,7 +238,7 @@ jlist_lsearch (jlist_t * t, uint64_t key, jnode_t * llimit, jnode_t * ulimit)
             iter--;
         }
         else {
-            int comp = comp_node_t (&node, ptr->next[iter - 1]);
+            int comp = comp_jnode_t (&node, ptr->next[iter - 1]);
             if (comp == 1) {
                 ptr = ptr->next[iter - 1];
             }
@@ -266,7 +271,8 @@ jlist_test (int verbose)
     uint64_t key[100];
     for (iter = 0; iter < 100; iter++) {
         key[iter] = rand () % 10000 + 1;
-        jlist_add (list, array + iter, key[iter], 0);
+        array[iter].key = key[iter];
+        jlist_add (list, array + iter);
     }
     if (verbose) {
         printf ("\nkey:%lu , search result:%lu", key[77],

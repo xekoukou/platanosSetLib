@@ -33,6 +33,7 @@ the next join
 #include <stdio.h>
 #include <stdint.h>
 #include <assert.h>
+#include <string.h>
 
 
 #ifdef __cplusplus
@@ -40,18 +41,23 @@ extern "C"
 {
 #endif
 
-struct _jnode_t
-{
-    int height;
-    struct _jnode_t **next;
-    uint64_t position;
-    uint64_t key;
-};
+    struct _jnode_t
+    {
+        int height;
+        struct _jnode_t **next;
+        uint64_t position;
+        uint64_t key;
+        uint8_t value;
+        uint8_t size;           //size of key in varint;
+        int dim;
+    };
 
 
     typedef struct _jnode_t jnode_t;
-
-    jnode_t *node_init (jnode_t * node, uint64_t key, uint64_t position);
+    //dim will be initialized by the array itself
+    int comp_jnode_t (jnode_t * first, jnode_t * second);
+    jnode_t *node_init (jnode_t * node, uint64_t key, uint8_t size,
+                        uint64_t position, uint8_t value);
 
     typedef struct _jlist_t jlist_t;
 
@@ -67,8 +73,7 @@ struct _jnode_t
 //  Add a strictly postive key to the skip list, returns 0 if already present
 //node is an externally provided memory
 //it is assumed that a pointer is externally kept to that node
-    int jlist_add (jlist_t * jlist, jnode_t * node, uint64_t key,
-                   uint64_t position);
+    int jlist_add (jlist_t * jlist, jnode_t * node);
 
 //  Remove a key from the skip list, returns 0 if not present
     int jlist_delete (jlist_t * jlist, uint64_t key);
