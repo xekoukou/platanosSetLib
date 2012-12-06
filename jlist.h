@@ -71,6 +71,8 @@ extern "C"
 //clears the skiplist,so as to be used by someone else
     void jlist_clear (jlist_t * jlist);
 
+jnode_t * jlist_first(jlist_t *jlist);
+
 //  Add a strictly postive key to the skip list, returns 0 if already present
 //node is an externally provided memory
 //it is assumed that a pointer is externally kept to that node

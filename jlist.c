@@ -86,6 +86,11 @@ jlist_destroy (jlist_t ** jlist)
 
 }
 
+jnode_t * jlist_first(jlist_t *jlist){
+return jlist->head->next[0];
+
+}
+
 void
 jlist_clear (jlist_t * jlist)
 {
