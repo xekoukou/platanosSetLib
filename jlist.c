@@ -43,7 +43,7 @@ comp_jnode_t (jnode_t * first, jnode_t * second)
 
 
 jnode_t *
-node_init (jnode_t * node, uint64_t key, uint8_t size, uint64_t position,
+jnode_init (jnode_t * node, uint64_t key, uint8_t size, uint64_t position,
            uint8_t value)
 {
     node->key = key;
@@ -68,8 +68,8 @@ jlist_new (int max_height)
 {
     jlist_t *jlist = calloc (1, sizeof (jlist_t));
     jlist->head = calloc (1, sizeof (jnode_t));
-    jlist->head = node_init (jlist->head, 0, 0, 0, 0);
-    jlist->head->height = 1;
+    jlist->head = jnode_init (jlist->head, 0, 0, 0, 0);
+    jlist->head->height = max_height;
     jlist->head->next = calloc (max_height, sizeof (jnode_t *));
     jlist->max_height = max_height;
     return jlist;
@@ -89,8 +89,10 @@ jlist_destroy (jlist_t ** jlist)
 void
 jlist_clear (jlist_t * jlist)
 {
-    jlist->head->next = NULL;
-    jlist->head->height = 1;
+int iter;
+for(iter=0;iter<jlist->head->height;iter++){
+    jlist->head->next[iter] = NULL;
+}
 }
 
 

@@ -84,7 +84,7 @@ sklist_new (int max_height)
 {
     sklist_t *sklist = malloc (sizeof (sklist_t));
     sklist->head = node_new (0);
-    sklist->head->height = 1;
+    sklist->head->height = max_height;
     sklist->head->next = calloc (1, sizeof (sklnode_t *));
     sklist->max_height = max_height;
     return sklist;

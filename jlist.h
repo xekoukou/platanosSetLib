@@ -49,14 +49,15 @@ extern "C"
         uint64_t key;
         uint8_t value;
         uint8_t size;           //size of key in varint;
-        int dim;
+        uint8_t dim;    //used to be able to remove the nodes
+//from the jlist and update the apropriate arrays
     };
 
 
     typedef struct _jnode_t jnode_t;
     //dim will be initialized by the array itself
     int comp_jnode_t (jnode_t * first, jnode_t * second);
-    jnode_t *node_init (jnode_t * node, uint64_t key, uint8_t size,
+    jnode_t *jnode_init (jnode_t * node, uint64_t key, uint8_t size,
                         uint64_t position, uint8_t value);
 
     typedef struct _jlist_t jlist_t;
