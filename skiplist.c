@@ -117,7 +117,7 @@ sklist_add_ (sklist_t * sklist, int height, uint64_t key)
     sklnode_t *ptr = sklist->head;
     while (iter) {
         if (!(ptr->next[iter - 1])) {
-            prev_list[iter] = ptr;
+            prev_list[iter-1] = ptr;
             iter--;
         }
         else {
@@ -127,7 +127,7 @@ sklist_add_ (sklist_t * sklist, int height, uint64_t key)
             }
             else {
                 if (comp == -1) {
-                    prev_list[iter] = ptr;
+                    prev_list[iter-1] = ptr;
                     iter--;
                 }
                 else {
@@ -145,9 +145,9 @@ sklist_add_ (sklist_t * sklist, int height, uint64_t key)
 
     node->next = calloc (node->height, sizeof (sklnode_t *));
 
-    for (iter = 1; iter <= height; iter++) {
-        node->next[iter - 1] = prev_list[iter]->next[iter - 1];
-        prev_list[iter]->next[iter - 1] = node;
+    for (iter = 1; iter <= node->height; iter++) {
+        node->next[iter - 1] = prev_list[iter-1]->next[iter - 1];
+        prev_list[iter-1]->next[iter - 1] = node;
     }
 
     return 1;
@@ -176,7 +176,7 @@ sklist_delete_ (sklist_t * sklist, int height, uint64_t key)
     int comp = 1;
     while (iter) {
         if (!(ptr->next[iter - 1])) {
-            prev_list[iter] = ptr;
+            prev_list[iter-1] = ptr;
             iter--;
         }
         else {
@@ -185,7 +185,7 @@ sklist_delete_ (sklist_t * sklist, int height, uint64_t key)
                 ptr = ptr->next[iter - 1];
             }
             else {
-                prev_list[iter] = ptr;
+                prev_list[iter-1] = ptr;
                 iter--;
 
             }
@@ -195,8 +195,8 @@ sklist_delete_ (sklist_t * sklist, int height, uint64_t key)
     if (!comp) {
         ptr = ptr->next[0];
 
-        for (iter = 1; iter <= height; iter++) {
-            prev_list[iter]->next[iter - 1] = ptr->next[iter - 1];
+        for (iter = 1; iter <= node->height; iter++) {
+            prev_list[iter-1]->next[iter - 1] = ptr->next[iter - 1];
         }
         node_destroy (&ptr);
 
