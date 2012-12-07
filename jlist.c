@@ -43,11 +43,19 @@ comp_jnode_t (jnode_t * first, jnode_t * second)
 
 
 void
-jnode_init (jnode_t * node, uint64_t key
+jnode_init (jnode_t * node, uint64_t key,int dim
             )
 {
     node->key = key;
+    node->dim[node->dim_size] = dim;
+    node->dim_size++;
 
+}
+
+void
+jnode_clear(jnode_t * node){
+
+node->dim_size=0;
 }
 
 
@@ -70,7 +78,7 @@ jlist_first (jlist_t * jlist)
 void
 jlist_init (jlist_t * jlist,int max_height)
 {
-    jnode_init (&(jlist->head), 0);
+    jnode_init (&(jlist->head), 0,0);
     jlist->head.height = max_height;
 
 
@@ -104,12 +112,8 @@ jlist_add_ (jlist_t * jlist, int height, jnode_t * node)
                     iter--;
                 }
                 else {
-//in essence we create a new list that has this node as a start
-//searching till this node is also possible if at least one node remains in the skiplist
-//we should either delete all or none
-                    node->height = ptr->next[iter - 1]->height;
-                    memcpy (node->next, ptr->next[iter - 1]->next,
-                            node->height * sizeof (jnode_t *));
+//that assumes that any new node is cleared before added to the jlist
+                    jnode_init(ptr->next[iter-1],node->key,node->dim[0]); 
                     return 0;
                 }
             }
@@ -174,7 +178,7 @@ jlist_delete_ (jlist_t * jlist, int height, uint64_t key)
         for (iter = 1; iter <= ptr->height; iter++) {
             prev_list[iter-1]->next[iter - 1] = ptr->next[iter - 1];
         }
-
+        jnode_clear(ptr);
 
         return 1;
 

@@ -27,7 +27,7 @@ the next join
 
 #ifndef JLIST_H
 #define JLIST_H
-
+//look below after changing this
 #define MAX_DIM_INTER 20
 
 #include <stdlib.h>
@@ -57,14 +57,16 @@ extern "C"
     typedef struct _jnode_t jnode_t;
     //dim will be initialized by the array itself
     int comp_jnode_t (jnode_t * first, jnode_t * second);
-    void jnode_init (jnode_t * node, uint64_t key
+    void jnode_init (jnode_t * node, uint64_t key,int dim
                         );
+
+    void jnode_clear (jnode_t * node);
 
     typedef struct _jlist_t jlist_t;
 
 
 //initss the skiplist,so as to be used by someone else
-    void jlist_clear (jlist_t * jlisti,int max_height);
+    void jlist_init (jlist_t * jlist,int max_height);
 
     jnode_t *jlist_first (jlist_t * jlist);
 
