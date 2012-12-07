@@ -43,13 +43,10 @@ comp_jnode_t (jnode_t * first, jnode_t * second)
 
 
 jnode_t *
-jnode_init (jnode_t * node, uint64_t key, uint8_t size, uint64_t position,
-           uint8_t value)
+jnode_init (jnode_t * node, uint64_t key
+            )
 {
     node->key = key;
-    node->position = position;
-    node->value = value;
-    node->size = size;
 
     return node;
 }
@@ -68,7 +65,7 @@ jlist_new (int max_height)
 {
     jlist_t *jlist = calloc (1, sizeof (jlist_t));
     jlist->head = calloc (1, sizeof (jnode_t));
-    jlist->head = jnode_init (jlist->head, 0, 0, 0, 0);
+    jlist->head = jnode_init (jlist->head, 0);
     jlist->head->height = max_height;
     jlist->head->next = calloc (max_height, sizeof (jnode_t *));
     jlist->max_height = max_height;
@@ -86,18 +83,20 @@ jlist_destroy (jlist_t ** jlist)
 
 }
 
-jnode_t * jlist_first(jlist_t *jlist){
-return jlist->head->next[0];
+jnode_t *
+jlist_first (jlist_t * jlist)
+{
+    return jlist->head->next[0];
 
 }
 
 void
 jlist_clear (jlist_t * jlist)
 {
-int iter;
-for(iter=0;iter<jlist->head->height;iter++){
-    jlist->head->next[iter] = NULL;
-}
+    int iter;
+    for (iter = 0; iter < jlist->head->height; iter++) {
+        jlist->head->next[iter] = NULL;
+    }
 }
 
 
@@ -110,7 +109,7 @@ jlist_add_ (jlist_t * jlist, int height, jnode_t * node)
     jnode_t *ptr = jlist->head;
     while (iter) {
         if (!(ptr->next[iter - 1])) {
-            prev_list[iter] = ptr;
+            prev_list[iter-1] = ptr;
             iter--;
         }
         else {
@@ -120,7 +119,7 @@ jlist_add_ (jlist_t * jlist, int height, jnode_t * node)
             }
             else {
                 if (comp == -1) {
-                    prev_list[iter] = ptr;
+                    prev_list[iter-1] = ptr;
                     iter--;
                 }
                 else {
@@ -137,13 +136,13 @@ jlist_add_ (jlist_t * jlist, int height, jnode_t * node)
     }
 
     node->height = 1;
-    if ((node->height < jlist->max_height) && ((rand () % 4) == 0)) {
+    if ((node->height <= jlist->max_height) && ((rand () % 4) == 0)) {
         node->height++;
     }
 
-    for (iter = 1; iter <= height; iter++) {
-        node->next[iter - 1] = prev_list[iter]->next[iter - 1];
-        prev_list[iter]->next[iter - 1] = node;
+    for (iter = 1; iter <= node->height; iter++) {
+        node->next[iter - 1] = prev_list[iter-1]->next[iter - 1];
+        prev_list[iter-1]->next[iter - 1] = node;
     }
 
     return 1;
@@ -172,7 +171,7 @@ jlist_delete_ (jlist_t * jlist, int height, uint64_t key)
     int comp = 1;
     while (iter) {
         if (!(ptr->next[iter - 1])) {
-            prev_list[iter] = ptr;
+            prev_list[iter-1] = ptr;
             iter--;
         }
         else {
@@ -181,7 +180,7 @@ jlist_delete_ (jlist_t * jlist, int height, uint64_t key)
                 ptr = ptr->next[iter - 1];
             }
             else {
-                prev_list[iter] = ptr;
+                prev_list[iter-1] = ptr;
                 iter--;
 
             }
@@ -191,8 +190,8 @@ jlist_delete_ (jlist_t * jlist, int height, uint64_t key)
     if (!comp) {
         ptr = ptr->next[0];
 
-        for (iter = 1; iter <= height; iter++) {
-            prev_list[iter]->next[iter - 1] = ptr->next[iter - 1];
+        for (iter = 1; iter <= ptr->height; iter++) {
+            prev_list[iter-1]->next[iter - 1] = ptr->next[iter - 1];
         }
 
 

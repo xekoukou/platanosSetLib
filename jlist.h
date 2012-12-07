@@ -25,9 +25,10 @@ the next join
 
 */
 
-
 #ifndef JLIST_H
 #define JLIST_H
+
+#define MAX_DIM_INTER 20
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -45,20 +46,18 @@ extern "C"
     {
         int height;
         struct _jnode_t **next;
-        uint64_t position;
         uint64_t key;
-        uint8_t value;
-        uint8_t size;           //size of key in varint;
-        uint8_t dim;    //used to be able to remove the nodes
+        uint8_t dim[MAX_DIM_INTER];            //used to be able to remove the nodes
 //from the jlist and update the apropriate arrays
-    };
+        uint8_t dim_size;
+       };
 
 
     typedef struct _jnode_t jnode_t;
     //dim will be initialized by the array itself
     int comp_jnode_t (jnode_t * first, jnode_t * second);
-    jnode_t *jnode_init (jnode_t * node, uint64_t key, uint8_t size,
-                        uint64_t position, uint8_t value);
+    jnode_t *jnode_init (jnode_t * node, uint64_t key
+                        );
 
     typedef struct _jlist_t jlist_t;
 
@@ -71,7 +70,7 @@ extern "C"
 //clears the skiplist,so as to be used by someone else
     void jlist_clear (jlist_t * jlist);
 
-jnode_t * jlist_first(jlist_t *jlist);
+    jnode_t *jlist_first (jlist_t * jlist);
 
 //  Add a strictly postive key to the skip list, returns 0 if already present
 //node is an externally provided memory
