@@ -45,7 +45,8 @@ extern "C"
     struct _jnode_t
     {
         int height;
-        struct _jnode_t **next;
+        struct _jnode_t *next[27];   //27 is based on MAX_DIM_INTER and MAX_BUF_SIZE with this formula
+                                      //log2 (MAX_DIM * MAX_BUF) + 1
         uint64_t key;
         uint8_t dim[MAX_DIM_INTER];            //used to be able to remove the nodes
 //from the jlist and update the apropriate arrays
@@ -56,19 +57,14 @@ extern "C"
     typedef struct _jnode_t jnode_t;
     //dim will be initialized by the array itself
     int comp_jnode_t (jnode_t * first, jnode_t * second);
-    jnode_t *jnode_init (jnode_t * node, uint64_t key
+    void jnode_init (jnode_t * node, uint64_t key
                         );
 
     typedef struct _jlist_t jlist_t;
 
-//  Create a new skip list
-    jlist_t *jlist_new (int max_height);
 
-//  Destroy a skip list
-    void jlist_destroy (jlist_t ** jlist);
-
-//clears the skiplist,so as to be used by someone else
-    void jlist_clear (jlist_t * jlist);
+//initss the skiplist,so as to be used by someone else
+    void jlist_clear (jlist_t * jlisti,int max_height);
 
     jnode_t *jlist_first (jlist_t * jlist);
 

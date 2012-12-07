@@ -42,60 +42,41 @@ comp_jnode_t (jnode_t * first, jnode_t * second)
 }
 
 
-jnode_t *
+void
 jnode_init (jnode_t * node, uint64_t key
             )
 {
     node->key = key;
 
-    return node;
 }
 
 
 
 struct _jlist_t
 {
-    jnode_t *head;
+    jnode_t head;
     int max_height;
 };
 
 
-jlist_t *
-jlist_new (int max_height)
-{
-    jlist_t *jlist = calloc (1, sizeof (jlist_t));
-    jlist->head = calloc (1, sizeof (jnode_t));
-    jlist->head = jnode_init (jlist->head, 0);
-    jlist->head->height = max_height;
-    jlist->head->next = calloc (max_height, sizeof (jnode_t *));
-    jlist->max_height = max_height;
-    return jlist;
-}
-
-void
-jlist_destroy (jlist_t ** jlist)
-{
-
-    free ((*jlist)->head->next);
-    free ((*jlist)->head);
-    free (*jlist);
-    jlist = NULL;
-
-}
 
 jnode_t *
 jlist_first (jlist_t * jlist)
 {
-    return jlist->head->next[0];
+    return jlist->head.next[0];
 
 }
 
 void
-jlist_clear (jlist_t * jlist)
+jlist_init (jlist_t * jlist,int max_height)
 {
+    jnode_init (&(jlist->head), 0);
+    jlist->head.height = max_height;
+
+
     int iter;
-    for (iter = 0; iter < jlist->head->height; iter++) {
-        jlist->head->next[iter] = NULL;
+    for (iter = 0; iter < jlist->head.height; iter++) {
+        jlist->head.next[iter] = NULL;
     }
 }
 
@@ -106,7 +87,7 @@ jlist_add_ (jlist_t * jlist, int height, jnode_t * node)
     jnode_t *prev_list[height];
 
     int iter = height;
-    jnode_t *ptr = jlist->head;
+    jnode_t *ptr = &(jlist->head);
     while (iter) {
         if (!(ptr->next[iter - 1])) {
             prev_list[iter-1] = ptr;
@@ -153,7 +134,7 @@ jlist_add_ (jlist_t * jlist, int height, jnode_t * node)
 int
 jlist_add (jlist_t * jlist, jnode_t * node)
 {
-    return jlist_add_ (jlist, jlist->head->height, node);
+    return jlist_add_ (jlist, jlist->head.height, node);
 }
 
 int
@@ -167,7 +148,7 @@ jlist_delete_ (jlist_t * jlist, int height, uint64_t key)
     jnode_t *prev_list[height];
 
     int iter = height;
-    jnode_t *ptr = jlist->head;
+    jnode_t *ptr = &(jlist->head);
     int comp = 1;
     while (iter) {
         if (!(ptr->next[iter - 1])) {
@@ -208,7 +189,7 @@ jlist_delete_ (jlist_t * jlist, int height, uint64_t key)
 int
 jlist_delete (jlist_t * jlist, uint64_t key)
 {
-    return jlist_delete_ (jlist, jlist->head->height, key);
+    return jlist_delete_ (jlist, jlist->head.height, key);
 }
 
 
@@ -217,7 +198,7 @@ jlist_delete (jlist_t * jlist, uint64_t key)
 uint64_t
 jlist_search (jlist_t * jlist, uint64_t key)
 {
-    if (jlist_lsearch (jlist, key, jlist->head, NULL)) {
+    if (jlist_lsearch (jlist, key, &(jlist->head), NULL)) {
         return key;
     }
     else {
@@ -267,41 +248,38 @@ void
 jlist_test (int verbose)
 {
     printf (" * jlist: ");
-    jlist_t *list = jlist_new (10);
-    jnode_t *array = calloc (100, sizeof (jnode_t));
+    jlist_t list;
+    jlist_init (&list,10);
+    jnode_t array[100];
     int iter;
-    for (iter = 0; iter < 100; iter++) {
-        array[iter].next = calloc (10, sizeof (jnode_t *));
-    }
 
     uint64_t key[100];
     for (iter = 0; iter < 100; iter++) {
         key[iter] = rand () % 10000 + 1;
         array[iter].key = key[iter];
-        jlist_add (list, array + iter);
+        jlist_add (&list, array + iter);
     }
     if (verbose) {
         printf ("\nkey:%lu , search result:%lu", key[77],
-                jlist_search (list, key[77]));
+                jlist_search (&list, key[77]));
         printf ("\nkey:%lu , search result:%lu", key[33],
-                jlist_search (list, key[33]));
+                jlist_search (&list, key[33]));
         printf ("\nkey:%lu , search result:%lu", key[66],
-                jlist_search (list, key[66]));
+                jlist_search (&list, key[66]));
         printf ("\nkey:%lu , search result:%lu", key[22],
-                jlist_search (list, key[22]));
+                jlist_search (&list, key[22]));
     }
-    assert (key[77] == jlist_search (list, key[77]));
-    assert (key[33] == jlist_search (list, key[33]));
-    assert (key[66] == jlist_search (list, key[66]));
-    assert (key[22] == jlist_search (list, key[22]));
+    assert (key[77] == jlist_search (&list, key[77]));
+    assert (key[33] == jlist_search (&list, key[33]));
+    assert (key[66] == jlist_search (&list, key[66]));
+    assert (key[22] == jlist_search (&list, key[22]));
 
-    assert (jlist_delete (list, key[77]));
-    assert (0 == jlist_search (list, key[77]));
+    assert (jlist_delete (&list, key[77]));
+    assert (0 == jlist_search (&list, key[77]));
 
-    assert (jlist_delete (list, key[33]));
-    assert (0 == jlist_search (list, key[33]));
+    assert (jlist_delete (&list, key[33]));
+    assert (0 == jlist_search (&list, key[33]));
 
-    jlist_destroy (&list);
 
     printf ("OK\n");
 }
