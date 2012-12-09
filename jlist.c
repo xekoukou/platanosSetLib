@@ -43,8 +43,7 @@ comp_jnode_t (jnode_t * first, jnode_t * second)
 
 
 void
-jnode_init (jnode_t * node, uint64_t key,int dim
-            )
+jnode_init (jnode_t * node, uint64_t key, int dim)
 {
     node->key = key;
     node->dim[node->dim_size] = dim;
@@ -53,18 +52,13 @@ jnode_init (jnode_t * node, uint64_t key,int dim
 }
 
 void
-jnode_clear(jnode_t * node){
+jnode_clear (jnode_t * node)
+{
 
-node->dim_size=0;
+    node->dim_size = 0;
 }
 
 
-
-struct _jlist_t
-{
-    jnode_t head;
-    int max_height;
-};
 
 
 
@@ -76,9 +70,9 @@ jlist_first (jlist_t * jlist)
 }
 
 void
-jlist_init (jlist_t * jlist,int max_height)
+jlist_init (jlist_t * jlist, int max_height)
 {
-    jnode_init (&(jlist->head), 0,0);
+    jnode_init (&(jlist->head), 0, 0);
     jlist->head.height = max_height;
 
 
@@ -98,7 +92,7 @@ jlist_add_ (jlist_t * jlist, int height, jnode_t * node)
     jnode_t *ptr = &(jlist->head);
     while (iter) {
         if (!(ptr->next[iter - 1])) {
-            prev_list[iter-1] = ptr;
+            prev_list[iter - 1] = ptr;
             iter--;
         }
         else {
@@ -108,12 +102,12 @@ jlist_add_ (jlist_t * jlist, int height, jnode_t * node)
             }
             else {
                 if (comp == -1) {
-                    prev_list[iter-1] = ptr;
+                    prev_list[iter - 1] = ptr;
                     iter--;
                 }
                 else {
 //that assumes that any new node is cleared before added to the jlist
-                    jnode_init(ptr->next[iter-1],node->key,node->dim[0]); 
+                    jnode_init (ptr->next[iter - 1], node->key, node->dim[0]);
                     return 0;
                 }
             }
@@ -126,8 +120,8 @@ jlist_add_ (jlist_t * jlist, int height, jnode_t * node)
     }
 
     for (iter = 1; iter <= node->height; iter++) {
-        node->next[iter - 1] = prev_list[iter-1]->next[iter - 1];
-        prev_list[iter-1]->next[iter - 1] = node;
+        node->next[iter - 1] = prev_list[iter - 1]->next[iter - 1];
+        prev_list[iter - 1]->next[iter - 1] = node;
     }
 
     return 1;
@@ -156,7 +150,7 @@ jlist_delete_ (jlist_t * jlist, int height, uint64_t key)
     int comp = 1;
     while (iter) {
         if (!(ptr->next[iter - 1])) {
-            prev_list[iter-1] = ptr;
+            prev_list[iter - 1] = ptr;
             iter--;
         }
         else {
@@ -165,7 +159,7 @@ jlist_delete_ (jlist_t * jlist, int height, uint64_t key)
                 ptr = ptr->next[iter - 1];
             }
             else {
-                prev_list[iter-1] = ptr;
+                prev_list[iter - 1] = ptr;
                 iter--;
 
             }
@@ -176,9 +170,9 @@ jlist_delete_ (jlist_t * jlist, int height, uint64_t key)
         ptr = ptr->next[0];
 
         for (iter = 1; iter <= ptr->height; iter++) {
-            prev_list[iter-1]->next[iter - 1] = ptr->next[iter - 1];
+            prev_list[iter - 1]->next[iter - 1] = ptr->next[iter - 1];
         }
-        jnode_clear(ptr);
+        jnode_clear (ptr);
 
         return 1;
 
@@ -253,7 +247,7 @@ jlist_test (int verbose)
 {
     printf (" * jlist: ");
     jlist_t list;
-    jlist_init (&list,10);
+    jlist_init (&list, 10);
     jnode_t array[100];
     int iter;
 
