@@ -44,9 +44,8 @@ extern "C"
 
     struct _jnode_t
     {
-        int height;
-        struct _jnode_t *next[9];       //27 is based on MAX_DIM_INTER and MAX_BUF_SIZE with this formula
-        //log2 (MAX_DIM * MAX_BUF) + 1  TODO fix this formula
+        struct _jnode_t *next;
+        struct _jnode_t *prev;
         uint64_t key;
         uint8_t dim[MAX_DIM_INTER];     //used to be able to remove the nodes
 //from the jlist and update the apropriate arrays
@@ -65,7 +64,6 @@ extern "C"
     struct _jlist_t
     {
         jnode_t head;
-        int max_height;
     };
 
 
@@ -76,27 +74,16 @@ extern "C"
 //initss the skiplist,so as to be used by someone else
     void jlist_init (jlist_t * jlist, int max_height);
 
-    jnode_t *jlist_first (jlist_t * jlist);
+//the head always points at the last
+    jnode_t *jlist_last (jlist_t * jlist);
 
 //  Add a strictly postive key to the skip list, returns 0 if already present
 //node is an externally provided memory
 //it is assumed that a pointer is externally kept to that node
-    int jlist_add (jlist_t * jlist, jnode_t * node);
+    int jlist_add (jlist_t * jlist, jnode_t * after, jnode_t * node);
 
 //  Remove a key from the skip list, returns 0 if not present
-    int jlist_delete (jlist_t * jlist, uint64_t key);
-
-//  Search a key, returns the key or zero if not present
-    uint64_t jlist_search (jlist_t * jlist, uint64_t key);
-
-//  Search a key between 2 limits, returns the sklist node that contains it
-    jnode_t *jlist_lsearch (jlist_t * t, uint64_t key,
-                            jnode_t * llimit, jnode_t * ulimit);
-
-
-//  Selt test of this class
-    void jlist_test (int verbose);
-
+    int jlist_delete (jlist_t * jlist, jnode_t * node);
 
 
 #ifdef __cplusplus
