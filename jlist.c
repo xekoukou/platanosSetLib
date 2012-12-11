@@ -79,10 +79,9 @@ jlist_init (jlist_t * jlist, int max_height)
 }
 
 
-int
+jnode_t *
 jlist_add (jlist_t * jlist, jnode_t * after, jnode_t * node)
 {
-
     jnode_t *ptr = after;
     while (ptr->next) {
         int comp = comp_jnode_t (node, ptr->next);
@@ -94,20 +93,21 @@ jlist_add (jlist_t * jlist, jnode_t * after, jnode_t * node)
                 node->next = ptr->next;
                 node->prev = ptr;
                 ptr->next = node;
+                node->next->prev = node;
 
-                return 1;
+                return node;
             }
             else {
 //that assumes that any new node is cleared before added to the jlist
                 jnode_init (ptr->next, node->key, node->dim[0]);
-                return 0;
+                return ptr->next;
             }
         }
     }
     ptr->next = node;
     node->next = NULL;
     node->prev = ptr;
-    return 1;
+    return node;
 
 }
 
@@ -115,7 +115,9 @@ int
 jlist_delete (jlist_t * jlist, jnode_t * node)
 {
     node->prev->next = node->next;
-    node->next->prev = node->prev;
+    if (node->next) {
+        node->next->prev = node->prev;
+    }
     return 1;
 
 }

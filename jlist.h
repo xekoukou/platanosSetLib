@@ -80,7 +80,7 @@ extern "C"
 //  Add a strictly postive key to the skip list, returns 0 if already present
 //node is an externally provided memory
 //it is assumed that a pointer is externally kept to that node
-    int jlist_add (jlist_t * jlist, jnode_t * after, jnode_t * node);
+    jnode_t *jlist_add (jlist_t * jlist, jnode_t * after, jnode_t * node);
 
 //  Remove a key from the skip list, returns 0 if not present
     int jlist_delete (jlist_t * jlist, jnode_t * node);
