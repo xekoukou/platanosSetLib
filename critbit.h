@@ -40,28 +40,25 @@ extern "C"
         void *child[2];
         uint32_t byte;
         uint8_t otherbits;
-    } critbit0_node;
+    } critbit_node;
 
 
     typedef struct
     {
         void *root;
-    } critbit0_tree;
+    } critbit_tree;
 
-    int critbit0_contains (critbit0_tree * t, const char *u);
+    int critbit_contains (critbit_tree * t, const char *u, size_t ulen);
 
 //parent is given the value of the last internal node
+//p is the point where search starts
 //return 1 on success 
-    int critbit0_subtree_contains (critbit0_tree * t,
-                                   critbit0_node * p,
-                                   const char *u, critbit0_node ** parent);
-    int critbit0_insert (critbit0_tree * t, const char *u);
-    int critbit0_delete (critbit0_tree * t, const char *u);
-    void critbit0_clear (critbit0_tree * t);
-    //less efficient critbit0_subtree_contains
-    int critbit0_allprefixed (critbit0_tree * t, const char *prefix,
-                              int (*handle) (const char *, void *),
-                              void *arg);
+    int critbit_scontains (critbit_tree * t,
+                           critbit_node * p,
+                           const char *u, size_t ulen, critbit_node ** parent);
+    int critbit_insert (critbit_tree * t, const char *u, size_t ulen);
+    int critbit_delete (critbit_tree * t, const char *u, size_t ulen);
+    void critbit_clear (critbit_tree * t);
 
 
 #ifdef __cplusplus
